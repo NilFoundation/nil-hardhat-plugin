@@ -1,29 +1,58 @@
 import { extendEnvironment } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import {WalletClient, LocalKeySigner, HttpTransport} from "@nilfoundation/niljs"
+import {WalletV1, LocalECDSAKeySigner, HttpTransport,PublicClient, Faucet, externalDeploymentMessage} from "@nilfoundation/niljs"
 
-extendEnvironment((hre: HardhatRuntimeEnvironment) => {
+function hexStringToUint8Array(hexString: string): Uint8Array {
+	// Remove the '0x' prefix if it exists
+	const cleanHexString = hexString.startsWith('0x') ? hexString.slice(2) : hexString;
+
+	// Calculate the number of bytes
+	const numBytes = cleanHexString.length / 2;
+
+	// Create a Uint8Array with the correct length
+	const byteArray = new Uint8Array(numBytes);
+
+	// Convert each pair of hex characters to a byte
+	for (let i = 0; i < numBytes; i++) {
+		byteArray[i] = parseInt(cleanHexString.substr(i * 2, 2), 16);
+	}
+
+	return byteArray;
+}
+extendEnvironment(async (hre: HardhatRuntimeEnvironment) => {
+	// Access the custom walletAddress
+	const walletAddress = hre.config.walletAddress;
 
 	const privateKey = hre.network.config.accounts[0];
 	const url = hre.network.config.url;
-	console.log(hre.network.config.accounts)
-	var walletClient
+
+	var client
 	var originalRequest
 	var signer
+	var wallet
+	var pubKey
+	var faucet
 	if (privateKey != undefined){
 		originalRequest = hre.network.provider.request.bind(hre.network.provider);
-		signer = new LocalKeySigner({
-			privateKey: privateKey,
-		});
-		walletClient = new WalletClient({
-			shardId: 1,
-			signer: new LocalKeySigner({
-				privateKey: privateKey,
-			}),
+		client = new PublicClient({
 			transport: new HttpTransport({
 				endpoint: url,
 			}),
+			shardId: 1,
 		});
+		signer = new LocalECDSAKeySigner({
+			privateKey: privateKey,
+		});
+		pubKey = await signer.getPublicKey();
+		 wallet = new WalletV1({
+			pubkey: pubKey,
+			salt: 100n,
+			shardId: 1,
+			client,
+			signer,
+			address: walletAddress,
+		});
+		faucet = new Faucet(client);
 	}
 
 	hre.network.provider.request = async (args: { method: string, params?: any[] }) => {
@@ -43,7 +72,8 @@ extendEnvironment((hre: HardhatRuntimeEnvironment) => {
 
 		if (args.method == "eth_getTransactionCount"){
 			// Modify the parameters to add the first parameter 0
-			args.params[0]=signer.getAddress(1)
+			const value =await signer.getAddress(1)
+			args.params[0]="0x"+Buffer.from(value).toString('hex');
 			args.params[1]="latest";
 		}
 
@@ -107,6 +137,7 @@ extendEnvironment((hre: HardhatRuntimeEnvironment) => {
 		if (args.method == "eth_getTransactionByHash"){
 			args.method = "eth_getInMessageByHash"
 			args.params = [1, ...args.params];
+
 			const result =  await originalRequest(args);
 			if (!result) {
 				return result;
@@ -144,16 +175,31 @@ extendEnvironment((hre: HardhatRuntimeEnvironment) => {
 		}
 
 		if (args.method == "eth_sendTransaction"){
-			console.log(args.params[0].data)
-			const result = await walletClient.deployContract({
-				deployData: {
-					bytecode: args.params[0].data,
-					shardId: 1,
+			const chainId = await client.chainId();
+
+			const deploymentMessage = externalDeploymentMessage(
+				{
+					salt: 100n,
+					shard: 1,
+					bytecode: hexStringToUint8Array(args.params[0].data)
 				},
-			});
-			console.log(Buffer.from(result).toString('hex'))
-			return "0x"+Buffer.from(result).toString('hex')
+				chainId,
+			);
+
+			const addr = "0x"+Buffer.from(deploymentMessage.to).toString('hex')
+			await faucet.withdrawTo(addr, 8000000n);
+			while (true) {
+				const balance = await client.getBalance(addr, "latest");
+				if (balance > 0) {
+					break;
+				}
+				await new Promise((resolve) => setTimeout(resolve, 1000));
+			}
+			await deploymentMessage.send(client);
+
+			return "0x"+Buffer.from(deploymentMessage.hash()).toString('hex')
 		}
+
 		return originalRequest(args);
 	};
 });

@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "nil.js": "0.1.0",
     "ethers": "^6.12.1",
     "hardhat": "^2.22.4"
   }
