@@ -27,6 +27,7 @@ extendEnvironment(async (hre: HardhatRuntimeEnvironment) => {
 	const url = hre.network.config.url;
 
 	var client
+	var OriginalSend
 	var originalRequest
 	var signer
 	var wallet
@@ -34,6 +35,7 @@ extendEnvironment(async (hre: HardhatRuntimeEnvironment) => {
 	var faucet
 	if (privateKey != undefined){
 		originalRequest = hre.network.provider.request.bind(hre.network.provider);
+		OriginalSend = hre.network.provider.send.bind(hre.network.provider);
 		client = new PublicClient({
 			transport: new HttpTransport({
 				endpoint: url,
@@ -55,7 +57,148 @@ extendEnvironment(async (hre: HardhatRuntimeEnvironment) => {
 		faucet = new Faucet(client);
 	}
 
+	hre.network.provider.send = async ( method: string, params?: any[] ) => {
+		console.log(method)
+		// Ensure params is always an array
+		params = params || [];
+		if (method == "eth_blockNumber"){
+			return "0x0"
+		}
+
+		if (method == "eth_estimateGas"){
+			return "0x0"
+		}
+
+		if (method == "eth_call"){
+
+			// Ensure the transaction object exists and then set the gasLimit
+			if (params[0]) {
+				params[0].gasLimit = '0xf4240';
+				params[0].from = params[0].to;
+				params[0].value = 0;
+			}
+
+			console.log("Updated transaction parameters:", params);
+
+			console.log(params)
+			const result = await OriginalSend(method, params );
+
+
+			console.log("RESULT: ", result)
+		}
+
+		if (method == "eth_sendTransaction"){
+			console.log(params[0])
+			const tx = await wallet.syncSendMessage({
+				to: hexStringToUint8Array(params[0].to),
+				gas: 1000000n,
+				value: 0n,
+				data: hexStringToUint8Array(params[0].data),
+				deploy: false,
+			});
+
+			console.log(tx)
+
+			return tx
+		}
+		if (method == "eth_getTransactionReceipt"){
+			method = "eth_getInMessageReceipt"
+			params = [1, ...params];
+			const result =  await OriginalSend(method, params );
+			if (!result) {
+				return null;
+			}
+
+			// Ensure blockHash is a string
+			if (typeof result.blockHash !== "string") {
+				result.blockHash = String(result.blockHash);
+			}
+
+			// Ensure blockNumber is a string
+			if (typeof result.blockNumber !== "string") {
+				result.blockNumber = String(result.blockNumber);
+			}
+
+			// Ensure status is a hexadecimal string
+			if (typeof result.success === "boolean") {
+				result.status = result.success ? "0x1" : "0x0";
+			} else if (result.success === "true") {
+				result.status = "0x1";
+			} else if (result.success === "false") {
+				result.status = "0x0";
+			}
+
+
+			// Ensure contractAddress is null or a string
+			if (result.contractAddress !== null && typeof result.contractAddress !== "string") {
+				result.contractAddress = String(result.contractAddress);
+			}
+
+			// Ensure gasUsed is a string
+			if (typeof result.gasUsed !== "string") {
+				result.gasUsed = String(result.gasUsed);
+			}
+			result.logs = []
+			result.index = 1
+			result.hash = params[1]
+			result.cumulativeGasUsed = result.gasUsed
+			console.log(result)
+			return result
+		}
+
+
+
+		if (method == "eth_getTransactionByHash"){
+			method = "eth_getInMessageByHash"
+			params = [1, ...params];
+
+			const result =  await OriginalSend(method, params );
+			if (!result) {
+				return result;
+			}
+
+			// Ensure hash is a string
+			if (typeof result.hash !== "string") {
+				result.hash = String(result.hash);
+			}
+
+			// Ensure blockNumber is a string or null
+			if (typeof result.blockNumber !== "string" && result.blockNumber !== null) {
+				result.blockNumber = String(result.blockNumber);
+			}
+
+			// Ensure blockHash is a string or null
+			if (typeof result.blockHash !== "string" && result.blockHash !== null) {
+				result.blockHash = String(result.blockHash);
+			}
+
+			// Ensure gasPrice is a string or ensure maxFeePerGas and maxPriorityFeePerGas are strings
+			if ("maxFeePerGas" in result) {
+				if (typeof result.maxFeePerGas !== "string") {
+					result.maxFeePerGas = String(result.maxFeePerGas);
+				}
+				if (typeof result.maxPriorityFeePerGas !== "string") {
+					result.maxPriorityFeePerGas = String(result.maxPriorityFeePerGas);
+				}
+			} else {
+				if (typeof result.gasPrice !== "string") {
+					result.gasPrice = String(result.gasPrice);
+				}
+			}
+
+			result.nonce = result.seqno
+			return result
+		}
+
+
+		console.log(params)
+		const response = await OriginalSend(method, params );
+
+		return response
+	}
+
 	hre.network.provider.request = async (args: { method: string, params?: any[] }) => {
+
 		if (args.method === "eth_getBlockByNumber") {
 			// Modify the parameters to add the first parameter 0
 			args.params = [1, ...args.params];
@@ -78,7 +221,14 @@ extendEnvironment(async (hre: HardhatRuntimeEnvironment) => {
 		}
 
 		if (args.method == "eth_call"){
-			return "0x"
+
+			return "0x0";
+
+		}
+
+		if (args.method == "eth_blockNumber"){
+			console.log("usaooo")
+			args.method = "eth_getBlockByNumber"
 		}
 
 		if (args.method == "eth_estimateGas"){
@@ -175,6 +325,9 @@ extendEnvironment(async (hre: HardhatRuntimeEnvironment) => {
 		}
 
 		if (args.method == "eth_sendTransaction"){
+			console.log("PARAMS: ", args.params[0])
+			if (args.params[0].to == undefined){
+
 			const chainId = await client.chainId();
 
 			const deploymentMessage = externalDeploymentMessage(
@@ -198,6 +351,7 @@ extendEnvironment(async (hre: HardhatRuntimeEnvironment) => {
 			await deploymentMessage.send(client);
 
 			return "0x"+Buffer.from(deploymentMessage.hash()).toString('hex')
+			}
 		}
 
 		return originalRequest(args);
