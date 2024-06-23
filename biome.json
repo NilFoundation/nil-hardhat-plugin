@@ -20,6 +20,6 @@
     "lineWidth": 80
   },
   "files": {
-    "ignore": ["node_modules"]
+    "ignore": ["node_modules", "dst"]
   }
 }
