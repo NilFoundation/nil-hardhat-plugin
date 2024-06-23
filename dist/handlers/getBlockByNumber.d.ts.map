@@ -1,0 +1,1 @@
+{"version":3,"file":"getBlockByNumber.d.ts","sourceRoot":"","sources":["../../src/handlers/getBlockByNumber.ts"],"names":[],"mappings":"AACA,OAAO,EAAC,cAAc,EAAC,MAAM,YAAY,CAAC;AAE1C,wBAAsB,gBAAgB,CAAC,MAAM,EAAE,MAAM,EAAE,MAAM,EAAE,GAAG,EAAE,EAAE,OAAO,EAAE,cAAc,gBAI5F"}
