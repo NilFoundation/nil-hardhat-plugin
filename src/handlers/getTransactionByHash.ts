@@ -1,45 +1,60 @@
-import {executeOriginalFunction} from "../interceptors"
-import {HandlerContext} from "../context";
+import type { HandlerContext } from "../context";
+import { executeOriginalFunction } from "../interceptors";
 
-export async function getTransactionByHash(method: string, params: any[], context: HandlerContext) {
-	method = "eth_getInMessageByHash"
-	params = [1, ...params];
+export async function getTransactionByHash(
+  method: string,
+  params: any[],
+  context: HandlerContext,
+) {
+  const [preparedMethod, preparedParams] = prepareInput(method, params);
+  const result = await executeOriginalFunction(
+    preparedMethod,
+    preparedParams,
+    context,
+  );
+  return adaptResult(result);
+}
 
-	const result = await executeOriginalFunction(method,params,context);
+function prepareInput(method: string, params: any[]): [string, any[]] {
+  const preparedMethod = "eth_getInMessageByHash";
+  const preparedParams = [1, ...params];
+  return [preparedMethod, preparedParams];
+}
 
-	if (!result) {
-		return result;
-	}
+function adaptResult(result: any): any {
+  if (!result) {
+    return result;
+  }
 
-	// Ensure hash is a string
-	if (typeof result.hash !== "string") {
-		result.hash = String(result.hash);
-	}
+  // Ensure hash is a string
+  if (typeof result.hash !== "string") {
+    result.hash = String(result.hash);
+  }
 
-	// Ensure blockNumber is a string or null
-	if (typeof result.blockNumber !== "string" && result.blockNumber !== null) {
-		result.blockNumber = String(result.blockNumber);
-	}
+  // Ensure blockNumber is a string or null
+  if (typeof result.blockNumber !== "string" && result.blockNumber !== null) {
+    result.blockNumber = String(result.blockNumber);
+  }
 
-	// Ensure blockHash is a string or null
-	if (typeof result.blockHash !== "string" && result.blockHash !== null) {
-		result.blockHash = String(result.blockHash);
-	}
+  // Ensure blockHash is a string or null
+  if (typeof result.blockHash !== "string" && result.blockHash !== null) {
+    result.blockHash = String(result.blockHash);
+  }
 
-	// Ensure gasPrice is a string or ensure maxFeePerGas and maxPriorityFeePerGas are strings
-	if ("maxFeePerGas" in result) {
-		if (typeof result.maxFeePerGas !== "string") {
-			result.maxFeePerGas = String(result.maxFeePerGas);
-		}
-		if (typeof result.maxPriorityFeePerGas !== "string") {
-			result.maxPriorityFeePerGas = String(result.maxPriorityFeePerGas);
-		}
-	} else {
-		if (typeof result.gasPrice !== "string") {
-			result.gasPrice = String(result.gasPrice);
-		}
-	}
+  // Ensure gasPrice is a string or ensure maxFeePerGas and maxPriorityFeePerGas are strings
+  if ("maxFeePerGas" in result) {
+    if (typeof result.maxFeePerGas !== "string") {
+      result.maxFeePerGas = String(result.maxFeePerGas);
+    }
+    if (typeof result.maxPriorityFeePerGas !== "string") {
+      result.maxPriorityFeePerGas = String(result.maxPriorityFeePerGas);
+    }
+  } else {
+    if (typeof result.gasPrice !== "string") {
+      result.gasPrice = String(result.gasPrice);
+    }
+  }
 
-	result.nonce = result.seqno
-	return result
+  result.nonce = result.seqno;
+  return result;
 }

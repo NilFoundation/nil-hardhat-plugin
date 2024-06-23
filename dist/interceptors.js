@@ -35,11 +35,12 @@ async function unifiedInterceptor(method, params, context) {
             return (0, chainId_1.chainId)(method, params, context);
         default:
             if (context.isRequest) {
-                return await context.originalRequest({ method: method, params: params });
+                return await context.originalRequest({
+                    method: method,
+                    params: params,
+                });
             }
-            else {
-                return await context.originalSend(method, params);
-            }
+            return await context.originalSend(method, params);
     }
 }
 exports.unifiedInterceptor = unifiedInterceptor;
@@ -47,8 +48,6 @@ async function executeOriginalFunction(method, params, context) {
     if (context.isRequest) {
         return await context.originalRequest({ method, params });
     }
-    else {
-        return await context.originalSend(method, params);
-    }
+    return await context.originalSend(method, params);
 }
 exports.executeOriginalFunction = executeOriginalFunction;

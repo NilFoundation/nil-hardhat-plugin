@@ -6,7 +6,10 @@
   "types": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "format": "biome format src",
+    "lint": "biome check src",
+    "fix:format": "biome format --write src",
+    "fix:lint": "biome check --apply src"
   },
   "keywords": [],
   "author": "",
@@ -14,5 +17,8 @@
   "dependencies": {
     "ethers": "^6.12.1",
     "hardhat": "^2.22.4"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.8.2"
   }
 }

@@ -12,8 +12,8 @@ function prepareInput(params) {
     return [1, ...params];
 }
 function adaptResponse(response) {
-    if ('number' in response && typeof response.number === 'number') {
-        response.number = '0x' + response.number.toString(16);
+    if ("number" in response && typeof response.number === "number") {
+        response.number = `0x${response.number.toString(16)}`;
     }
     return response;
 }

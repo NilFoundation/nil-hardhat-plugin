@@ -1,1 +1,1 @@
-{"version":3,"file":"gasPrice.d.ts","sourceRoot":"","sources":["../../src/handlers/gasPrice.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,cAAc,EAAC,MAAM,YAAY,CAAC;AAE1C,wBAAsB,QAAQ,CAAC,MAAM,EAAE,MAAM,EAAE,MAAM,EAAE,GAAG,EAAE,EAAE,OAAO,EAAE,cAAc,mBAEpF"}
+{"version":3,"file":"gasPrice.d.ts","sourceRoot":"","sources":["../../src/handlers/gasPrice.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,YAAY,CAAC;AAEjD,wBAAsB,QAAQ,CAC5B,MAAM,EAAE,MAAM,EACd,MAAM,EAAE,GAAG,EAAE,EACb,OAAO,EAAE,cAAc,mBAGxB"}

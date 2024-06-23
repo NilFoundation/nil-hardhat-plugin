@@ -3,9 +3,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTransactionByHash = void 0;
 const interceptors_1 = require("../interceptors");
 async function getTransactionByHash(method, params, context) {
-    method = "eth_getInMessageByHash";
-    params = [1, ...params];
-    const result = await (0, interceptors_1.executeOriginalFunction)(method, params, context);
+    const [preparedMethod, preparedParams] = prepareInput(method, params);
+    const result = await (0, interceptors_1.executeOriginalFunction)(preparedMethod, preparedParams, context);
+    return adaptResult(result);
+}
+exports.getTransactionByHash = getTransactionByHash;
+function prepareInput(method, params) {
+    const preparedMethod = "eth_getInMessageByHash";
+    const preparedParams = [1, ...params];
+    return [preparedMethod, preparedParams];
+}
+function adaptResult(result) {
     if (!result) {
         return result;
     }
@@ -38,4 +46,3 @@ async function getTransactionByHash(method, params, context) {
     result.nonce = result.seqno;
     return result;
 }
-exports.getTransactionByHash = getTransactionByHash;

@@ -11,7 +11,11 @@ const setup_1 = require("./setup");
     };
     hre.network.provider.request = (args) => {
         context.isRequest = true;
-        const safeParams = Array.isArray(args.params) ? args.params : (args.params ? [args.params] : []);
+        const safeParams = Array.isArray(args.params)
+            ? args.params
+            : args.params
+                ? [args.params]
+                : [];
         return (0, interceptors_1.unifiedInterceptor)(args.method, safeParams, context);
     };
 });

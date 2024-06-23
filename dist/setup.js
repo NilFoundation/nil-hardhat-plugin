@@ -8,7 +8,7 @@ function isStringArray(accounts) {
 }
 // Type guard to check if a network configuration is HTTP based
 function isHttpNetworkConfig(config) {
-    return 'url' in config;
+    return "url" in config;
 }
 // Function to setup the wallet and client
 async function setupWalletAndClient(hre) {
@@ -27,7 +27,9 @@ async function setupWalletAndClient(hre) {
     if (!privateKey) {
         throw new Error("No private key configured for the network.");
     }
-    const walletAddress = hre.config.walletAddress ? (0, hex_1.ensure0xPrefix)(hre.config.walletAddress) : undefined;
+    const walletAddress = hre.config.walletAddress
+        ? (0, hex_1.ensure0xPrefix)(hre.config.walletAddress)
+        : undefined;
     if (!walletAddress) {
         throw new Error("Wallet address is not configured.");
     }
@@ -57,7 +59,7 @@ async function setupWalletAndClient(hre) {
         signer,
         originalSend,
         originalRequest,
-        isRequest: false
+        isRequest: false,
     };
 }
 exports.setupWalletAndClient = setupWalletAndClient;

@@ -1,1 +1,1 @@
-{"version":3,"file":"getBlockByNumber.d.ts","sourceRoot":"","sources":["../../src/handlers/getBlockByNumber.ts"],"names":[],"mappings":"AACA,OAAO,EAAC,cAAc,EAAC,MAAM,YAAY,CAAC;AAE1C,wBAAsB,gBAAgB,CAAC,MAAM,EAAE,MAAM,EAAE,MAAM,EAAE,GAAG,EAAE,EAAE,OAAO,EAAE,cAAc,gBAI5F"}
+{"version":3,"file":"getBlockByNumber.d.ts","sourceRoot":"","sources":["../../src/handlers/getBlockByNumber.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,YAAY,CAAC;AAGjD,wBAAsB,gBAAgB,CACpC,MAAM,EAAE,MAAM,EACd,MAAM,EAAE,GAAG,EAAE,EACb,OAAO,EAAE,cAAc,gBASxB"}

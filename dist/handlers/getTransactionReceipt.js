@@ -17,8 +17,15 @@ function adaptResponse(result, params) {
     }
     result.hash = String(result.blockHash);
     result.blockNumber = String(result.blockNumber);
-    result.status = typeof result.success === "boolean" ? (result.success ? "0x1" : "0x0") : result.success;
-    result.contractAddress = result.contractAddress ? String(result.contractAddress) : null;
+    result.status =
+        typeof result.success === "boolean"
+            ? result.success
+                ? "0x1"
+                : "0x0"
+            : result.success;
+    result.contractAddress = result.contractAddress
+        ? String(result.contractAddress)
+        : null;
     result.gasUsed = String(result.gasUsed);
     result.logs = [];
     result.index = 1;

@@ -1,4 +1,4 @@
-import { HardhatUserConfig } from 'hardhat/types';
+import type { HardhatUserConfig } from "hardhat/types";
 export interface NilHardhatUserConfig extends HardhatUserConfig {
     walletAddress?: string;
 }
