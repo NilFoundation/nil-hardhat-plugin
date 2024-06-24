@@ -24,7 +24,8 @@ function adaptResponse(result: any, params: any[]): any {
     return null;
   }
 
-  result.hash = String(result.blockHash);
+
+  result.transactionIndex = 1;
   result.blockNumber = String(result.blockNumber);
   result.status =
     typeof result.success === "boolean"
@@ -38,8 +39,8 @@ function adaptResponse(result: any, params: any[]): any {
   result.gasUsed = String(result.gasUsed);
   result.logs = [];
   result.index = 1;
-  result.hash = params[1];
+  result.hash = String(params[1]);
+  result.transactionHash = String(params[1]);
   result.cumulativeGasUsed = result.gasUsed;
-
   return result;
 }

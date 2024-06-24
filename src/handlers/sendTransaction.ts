@@ -36,6 +36,7 @@ async function prepareDeployment(
     }
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
+
   await deploymentMessage.send(context.client);
   return `0x${Buffer.from(deploymentMessage.hash()).toString("hex")}`;
 }
