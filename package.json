@@ -1,24 +1,32 @@
 {
-  "name": "nil-hardhat-plugin",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@nilfoundation/hardhat-plugin",
+  "version": "0.1.0",
+  "description": "Custom Hardhat plugin to enable seamless deployment and interaction with applications within =nil;",
   "main": "dist/index.js",
   "types": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "format": "biome format src",
+    "build": "rimraf dist && tsc -p tsconfig.json",
     "lint": "biome check src",
-    "fix:format": "biome format --write src",
-    "fix:lint": "biome check --apply src"
+    "lint:fix": "biome check --write src"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@nilfoundation/niljs": "^0.3.0",
     "ethers": "^6.12.1",
     "hardhat": "^2.22.4"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.8.2"
-  }
+    "@biomejs/biome": "1.8.2",
+    "rimraf": "^5.0.7",
+    "typescript": "^5.5.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "files": [
+    "dist"
+  ]
 }

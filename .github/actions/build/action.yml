@@ -1,0 +1,14 @@
+name: "Build"
+description: "Lint, test and build the project."
+
+runs:
+  using: "composite"
+  steps:
+    - name: Lint
+      shell: bash
+      run: npm run lint
+    - name: Build
+      shell: bash
+      run: |
+        npm run build
+        ls -lh dist

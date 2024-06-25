@@ -24,7 +24,6 @@ function adaptResponse(result: any, params: any[]): any {
     return null;
   }
 
-
   result.transactionIndex = 1;
   result.blockNumber = String(result.blockNumber);
   result.status =
