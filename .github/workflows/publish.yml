@@ -9,10 +9,11 @@ concurrency:
 
 jobs:
   publish:
-    name: Version Pull Request
+    name: Publish
     runs-on: ubuntu-latest
     permissions:
       id-token: write
+      contents: read
     env:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
