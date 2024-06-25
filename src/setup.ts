@@ -69,7 +69,7 @@ export async function setupWalletAndClient(
   const pubKey = await signer.getPublicKey();
   const wallet = new WalletV1({
     pubkey: pubKey,
-    salt: 100n,
+    salt: BigInt(Math.floor(Math.random() * 1024)),
     shardId: 1,
     client,
     signer,

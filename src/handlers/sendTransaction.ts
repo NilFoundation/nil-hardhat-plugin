@@ -15,7 +15,7 @@ async function prepareDeployment(
   const chainId = await context.client.chainId();
   const deploymentMessage = externalDeploymentMessage(
     {
-      salt: 100n,
+      salt: BigInt(Math.floor(Math.random() * 1024)),
       shard: 1,
       bytecode: hexStringToUint8Array(params[0].data),
     },
