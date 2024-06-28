@@ -13,9 +13,10 @@ export function hexStringToUint8Array(hexString: string): Uint8Array {
 }
 
 export function shardNumber(address: string): number {
-  if (address.startsWith('0x')) {
-    address = address.slice(2);
+  let formattedAddress = address;
+  if (address.startsWith("0x")) {
+    formattedAddress = address.slice(2);
   }
-  const shardHex = address.slice(0, 4);
-  return parseInt(shardHex, 16);
+  const shardHex = formattedAddress.slice(0, 4);
+  return Number.parseInt(shardHex, 16);
 }

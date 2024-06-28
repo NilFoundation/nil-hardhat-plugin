@@ -15,5 +15,5 @@ export interface HandlerContext {
   originalSend: (method: string, params: any[]) => Promise<any>;
   originalRequest: (args: { method: string; params: any[] }) => Promise<any>;
   isRequest: boolean; // Field indicating if the original call was a request or send
-  gasLimit: bigint,
+  gasLimit: bigint;
 }
