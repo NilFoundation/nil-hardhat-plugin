@@ -5,6 +5,7 @@ declare module "hardhat/types/config" {
 
   export interface NilHardhatUserConfig extends HardhatUserConfig {
     walletAddress?: string;
+    gasLimit?: number;
   }
 
   interface HardhatConfig extends NilHardhatUserConfig {} // Augmenting existing type

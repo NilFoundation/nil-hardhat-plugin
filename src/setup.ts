@@ -11,8 +11,9 @@ import type {
   HttpNetworkConfig,
   NetworkConfig,
 } from "hardhat/types";
-import type { HandlerContext } from "./context";
-import { ensure0xPrefix } from "./utils/hex";
+import type {HandlerContext} from "./context";
+import {ensure0xPrefix} from "./utils/hex";
+import {shardNumber} from "./utils/conversion";
 
 function isStringArray(
   accounts: HttpNetworkAccountsConfig,
@@ -61,16 +62,16 @@ export async function setupWalletAndClient(
 
   // Set up network components
   const client = new PublicClient({
-    transport: new HttpTransport({ endpoint: url }),
-    shardId: 1,
+    transport: new HttpTransport({endpoint: url}),
+    shardId: shardNumber(walletAddress),
   });
 
-  const signer = new LocalECDSAKeySigner({ privateKey });
+  const signer = new LocalECDSAKeySigner({privateKey});
   const pubKey = await signer.getPublicKey();
   const wallet = new WalletV1({
     pubkey: pubKey,
     salt: BigInt(Math.floor(Math.random() * 1024)),
-    shardId: 1,
+    shardId: shardNumber(walletAddress),
     client,
     signer,
     address: walletAddress,
@@ -91,5 +92,6 @@ export async function setupWalletAndClient(
     originalSend,
     originalRequest,
     isRequest: false,
+    gasLimit: BigInt(hre.config.gasLimit ?? 1_000_000)
   };
 }
