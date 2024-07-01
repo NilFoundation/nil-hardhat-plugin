@@ -4,6 +4,7 @@ import {
   LocalECDSAKeySigner,
   PublicClient,
   WalletV1,
+  type WalletV1Config,
 } from "@nilfoundation/niljs";
 import type {
   HardhatRuntimeEnvironment,
@@ -12,6 +13,7 @@ import type {
   NetworkConfig,
 } from "hardhat/types";
 import type { HandlerContext } from "./context";
+import { shardNumber } from "./utils/conversion";
 import { ensure0xPrefix } from "./utils/hex";
 
 function isStringArray(
@@ -62,19 +64,18 @@ export async function setupWalletAndClient(
   // Set up network components
   const client = new PublicClient({
     transport: new HttpTransport({ endpoint: url }),
-    shardId: 1,
+    shardId: shardNumber(walletAddress),
   });
 
   const signer = new LocalECDSAKeySigner({ privateKey });
   const pubKey = await signer.getPublicKey();
-  const wallet = new WalletV1({
+  const config: WalletV1Config = {
     pubkey: pubKey,
-    salt: BigInt(Math.floor(Math.random() * 1024)),
-    shardId: 1,
     client,
     signer,
     address: walletAddress,
-  });
+  };
+  const wallet = new WalletV1(config);
   const faucet = new Faucet(client);
 
   const originalRequest = hre.network.provider.request.bind(
@@ -91,5 +92,6 @@ export async function setupWalletAndClient(
     originalSend,
     originalRequest,
     isRequest: false,
+    gasLimit: BigInt(hre.config.gasLimit ?? 1_000_000),
   };
 }

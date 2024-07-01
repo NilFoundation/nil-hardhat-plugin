@@ -11,3 +11,12 @@ export function hexStringToUint8Array(hexString: string): Uint8Array {
 
   return byteArray;
 }
+
+export function shardNumber(address: string): number {
+  let formattedAddress = address;
+  if (address.startsWith("0x")) {
+    formattedAddress = address.slice(2);
+  }
+  const shardHex = formattedAddress.slice(0, 4);
+  return Number.parseInt(shardHex, 16);
+}
