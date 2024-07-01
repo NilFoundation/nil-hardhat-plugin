@@ -24,4 +24,6 @@ extendEnvironment(async (hre) => {
 
 export interface NilHardhatUserConfig extends HardhatUserConfig {
   walletAddress?: string;
+  gasLimit?: number;
+  shardId?: number;
 }
