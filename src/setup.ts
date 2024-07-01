@@ -64,7 +64,7 @@ export async function setupWalletAndClient(
   // Set up network components
   const client = new PublicClient({
     transport: new HttpTransport({ endpoint: url }),
-    shardId: hre.config.shardId ?? shardNumber(walletAddress),
+    shardId: shardNumber(walletAddress),
   });
 
   const signer = new LocalECDSAKeySigner({ privateKey });

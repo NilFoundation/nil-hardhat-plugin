@@ -1,12 +1,13 @@
 import type { HandlerContext } from "../context";
 import { executeOriginalFunction } from "../interceptors";
+import { shardNumber } from "../utils/conversion";
 
 export async function getBlockByNumber(
   method: string,
   params: any[],
   context: HandlerContext,
 ) {
-  const preparedParams = prepareInput(params);
+  const preparedParams = prepareInput(params, context);
   const response = await executeOriginalFunction(
     method,
     preparedParams,
@@ -15,8 +16,8 @@ export async function getBlockByNumber(
   return adaptResponse(response);
 }
 
-function prepareInput(params: any[]): any[] {
-  return [1, ...params];
+function prepareInput(params: any[], context: HandlerContext): any[] {
+  return [shardNumber(context.wallet.getAddressHex()), ...params];
 }
 
 function adaptResponse(response: any): any {

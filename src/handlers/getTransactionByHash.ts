@@ -1,12 +1,17 @@
 import type { HandlerContext } from "../context";
 import { executeOriginalFunction } from "../interceptors";
+import { shardNumber } from "../utils/conversion";
 
 export async function getTransactionByHash(
   method: string,
   params: any[],
   context: HandlerContext,
 ) {
-  const [preparedMethod, preparedParams] = prepareInput(method, params);
+  const [preparedMethod, preparedParams] = prepareInput(
+    method,
+    params,
+    context,
+  );
   const result = await executeOriginalFunction(
     preparedMethod,
     preparedParams,
@@ -15,9 +20,16 @@ export async function getTransactionByHash(
   return adaptResult(result);
 }
 
-function prepareInput(method: string, params: any[]): [string, any[]] {
+function prepareInput(
+  method: string,
+  params: any[],
+  context: HandlerContext,
+): [string, any[]] {
   const preparedMethod = "eth_getInMessageByHash";
-  const preparedParams = [1, ...params];
+  const preparedParams = [
+    context.hre.config.shardId ?? shardNumber(context.wallet.getAddressHex()),
+    ...params,
+  ];
   return [preparedMethod, preparedParams];
 }
 
