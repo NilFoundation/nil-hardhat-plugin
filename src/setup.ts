@@ -3,7 +3,8 @@ import {
   HttpTransport,
   LocalECDSAKeySigner,
   PublicClient,
-  WalletV1, WalletV1Config,
+  WalletV1,
+  type WalletV1Config,
 } from "@nilfoundation/niljs";
 import type {
   HardhatRuntimeEnvironment,
@@ -72,7 +73,7 @@ export async function setupWalletAndClient(
     pubkey: pubKey,
     client,
     signer,
-    address: walletAddress!,
+    address: walletAddress,
   };
   const wallet = new WalletV1(config);
   const faucet = new Faucet(client);
