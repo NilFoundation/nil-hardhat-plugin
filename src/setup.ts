@@ -33,7 +33,7 @@ function isHttpNetworkConfig(
 export async function setupWalletAndClient(
   hre: HardhatRuntimeEnvironment,
 ): Promise<HandlerContext> {
-  const networkName = "nil_cluster";
+  const networkName = "nil";
   const networkConfig = hre.config.networks[networkName];
 
   // Error handling if the network configuration is not HTTP or is missing
@@ -64,7 +64,7 @@ export async function setupWalletAndClient(
   // Set up network components
   const client = new PublicClient({
     transport: new HttpTransport({ endpoint: url }),
-    shardId: shardNumber(walletAddress),
+    shardId: hre.config.shardId ?? shardNumber(walletAddress),
   });
 
   const signer = new LocalECDSAKeySigner({ privateKey });
