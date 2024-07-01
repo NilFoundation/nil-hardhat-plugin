@@ -3,7 +3,7 @@ import {
   HttpTransport,
   LocalECDSAKeySigner,
   PublicClient,
-  WalletV1,
+  WalletV1, WalletV1Config,
 } from "@nilfoundation/niljs";
 import type {
   HardhatRuntimeEnvironment,
@@ -68,14 +68,13 @@ export async function setupWalletAndClient(
 
   const signer = new LocalECDSAKeySigner({ privateKey });
   const pubKey = await signer.getPublicKey();
-  const wallet = new WalletV1({
+  const config: WalletV1Config = {
     pubkey: pubKey,
-    salt: BigInt(Math.floor(Math.random() * 1024)),
-    shardId: shardNumber(walletAddress),
     client,
     signer,
-    address: walletAddress,
-  });
+    address: walletAddress!,
+  };
+  const wallet = new WalletV1(config);
   const faucet = new Faucet(client);
 
   const originalRequest = hre.network.provider.request.bind(
