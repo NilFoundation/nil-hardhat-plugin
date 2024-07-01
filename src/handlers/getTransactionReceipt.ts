@@ -1,12 +1,17 @@
 import type { HandlerContext } from "../context";
 import { executeOriginalFunction } from "../interceptors";
+import { shardNumber } from "../utils/conversion";
 
 export async function getTransactionReceipt(
   method: string,
   params: any[],
   context: HandlerContext,
 ) {
-  const [preparedMethod, preparedParams] = prepareInput(method, params);
+  const [preparedMethod, preparedParams] = prepareInput(
+    method,
+    params,
+    context,
+  );
   const result = await executeOriginalFunction(
     preparedMethod,
     preparedParams,
@@ -15,8 +20,18 @@ export async function getTransactionReceipt(
   return adaptResponse(result, preparedParams);
 }
 
-function prepareInput(method: string, params: any[]): [string, any[]] {
-  return ["eth_getInMessageReceipt", [1, ...params]];
+function prepareInput(
+  method: string,
+  params: any[],
+  context: HandlerContext,
+): [string, any[]] {
+  return [
+    "eth_getInMessageReceipt",
+    [
+      context.hre.config.shardId ?? shardNumber(context.wallet.getAddressHex()),
+      ...params,
+    ],
+  ];
 }
 
 function adaptResponse(result: any, params: any[]): any {

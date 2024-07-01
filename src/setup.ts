@@ -33,7 +33,7 @@ function isHttpNetworkConfig(
 export async function setupWalletAndClient(
   hre: HardhatRuntimeEnvironment,
 ): Promise<HandlerContext> {
-  const networkName = "nil_cluster";
+  const networkName = "nil";
   const networkConfig = hre.config.networks[networkName];
 
   // Error handling if the network configuration is not HTTP or is missing

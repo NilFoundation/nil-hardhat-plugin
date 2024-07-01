@@ -20,19 +20,27 @@ async function prepareDeployment(
   );
   await waitTillCompleted(
     context.client,
-    1,
+    shardNumber(context.wallet.getAddressHex()),
     `0x${Buffer.from(hash).toString("hex")}`,
   );
 
   const deployed = await context.wallet.deployContract({
-    shardId: shardNumber(context.wallet.getAddressHex()),
+    shardId:
+      context.hre.config.shardId ?? shardNumber(context.wallet.getAddressHex()),
     bytecode: hexStringToUint8Array(params[0].data),
     args: [bytesToHex(context.wallet.pubkey)],
     salt: BigInt(Math.floor(Math.random() * 1024)),
     gas: context.gasLimit,
     value: context.gasLimit * 10n,
   });
-  return deployed.hash;
+
+  const receipt = await waitTillCompleted(
+    context.client,
+    shardNumber(context.wallet.getAddressHex()),
+    deployed.hash,
+  );
+
+  return receipt[0].outMessages?.[0] ?? "";
 }
 
 async function handleDirectTransaction(
