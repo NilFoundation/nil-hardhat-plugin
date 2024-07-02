@@ -53,8 +53,11 @@ async function handleDirectTransaction(
     value: 82309960n,
     data: hexStringToUint8Array(params[0].data),
   });
-  await waitTillCompleted(context.client, shardNumber(context.wallet.getAddressHex()), hash);
+  await waitTillCompleted(
+    context.client,
+    shardNumber(context.wallet.getAddressHex()),
+    hash,
+  );
 
-  return hash
-
+  return hash;
 }
