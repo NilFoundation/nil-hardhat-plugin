@@ -47,10 +47,17 @@ async function handleDirectTransaction(
   params: any[],
   context: HandlerContext,
 ): Promise<any> {
-  return await context.wallet.syncSendMessage({
+  const hash = await context.wallet.sendMessage({
     to: hexStringToUint8Array(params[0].to),
-    gas: context.gasLimit,
-    value: 0n,
+    gas: 100000n,
+    value: 82309960n,
     data: hexStringToUint8Array(params[0].data),
   });
+  await waitTillCompleted(
+    context.client,
+    shardNumber(context.wallet.getAddressHex()),
+    hash,
+  );
+
+  return hash;
 }
