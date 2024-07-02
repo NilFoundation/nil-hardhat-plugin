@@ -19,7 +19,7 @@ export async function call(
 function prepareInput(params: any[]): any[] {
   if (params[0].to !== undefined) {
     if (params[0]) {
-      params[0].gasLimit = "0xf4240";
+      params[0].gasLimit = "1000000000";
       params[0].from = params[0].to;
       params[0].value = 0;
     }
