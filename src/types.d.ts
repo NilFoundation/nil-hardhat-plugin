@@ -7,6 +7,8 @@ declare module "hardhat/types/config" {
     walletAddress?: string;
     gasLimit?: number;
     shardId?: number;
+    directTxGasLimit?: number;
+    directTxValue?: number;
   }
 
   interface HardhatConfig extends NilHardhatUserConfig {} // Augmenting existing type

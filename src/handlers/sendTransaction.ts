@@ -49,8 +49,8 @@ async function handleDirectTransaction(
 ): Promise<any> {
   const hash = await context.wallet.sendMessage({
     to: hexStringToUint8Array(params[0].to),
-    gas: 100000n,
-    value: 82309960n,
+    gas: context.directTxGasLimit ?? 100000n,
+    value: context.directTxValue ?? 82309960n,
     data: hexStringToUint8Array(params[0].data),
   });
   await waitTillCompleted(
