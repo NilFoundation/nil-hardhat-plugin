@@ -20,6 +20,8 @@ export async function unifiedInterceptor(
       return getTransactionReceipt(method, params, context);
     case "eth_getTransactionByHash":
       return getTransactionByHash(method, params, context);
+    case "eth_getInMessageByHash":
+      return executeOriginalFunction(method, params, context);
     case "eth_getTransactionCount":
       return getTransactionCount(method, params, context);
     case "eth_sendTransaction":
