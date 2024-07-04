@@ -14,16 +14,6 @@ async function prepareDeployment(
   params: any[],
   context: HandlerContext,
 ): Promise<string> {
-  const hash = await context.faucet.withdrawTo(
-    `0x${Buffer.from(context.wallet.address).toString("hex")}`,
-    context.gasLimit * 1000n,
-  );
-  await waitTillCompleted(
-    context.client,
-    shardNumber(context.wallet.getAddressHex()),
-    `0x${Buffer.from(hash).toString("hex")}`,
-  );
-
   const deployed = await context.wallet.deployContract({
     shardId:
       context.hre.config.shardId ?? shardNumber(context.wallet.getAddressHex()),
