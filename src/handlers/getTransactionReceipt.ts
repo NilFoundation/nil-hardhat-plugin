@@ -12,12 +12,21 @@ export async function getTransactionReceipt(
     params,
     context,
   );
+  if (context.debug) {
+    console.log(
+      `Method ${preparedMethod} params ${JSON.stringify(preparedParams)}`,
+    );
+  }
   const result = await executeOriginalFunction(
     preparedMethod,
     preparedParams,
     context,
   );
-  return adaptResponse(result, preparedParams);
+  const response = adaptResponse(result, preparedParams);
+  if (context.debug) {
+    console.log(`Response ${JSON.stringify(response)}`);
+  }
+  return response;
 }
 
 function prepareInput(

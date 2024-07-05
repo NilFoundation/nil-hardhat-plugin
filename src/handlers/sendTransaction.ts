@@ -4,6 +4,9 @@ import type { HandlerContext } from "../context";
 import { hexStringToUint8Array, shardNumber } from "../utils/conversion";
 
 export async function sendTransaction(params: any[], context: HandlerContext) {
+  if (context.debug) {
+    console.log(`Method eth_sendTransaction params ${JSON.stringify(params)}`);
+  }
   if (params[0].to === undefined) {
     return prepareDeployment(params, context);
   }
@@ -23,12 +26,18 @@ async function prepareDeployment(
     gas: context.gasLimit,
     value: context.gasLimit * 10n,
   });
+  if (context.debug) {
+    console.log(`Response deployment ${JSON.stringify(deployed)}`);
+  }
 
   const receipt = await waitTillCompleted(
     context.client,
     shardNumber(context.wallet.getAddressHex()),
     deployed.hash,
   );
+  if (context.debug) {
+    console.log(`Response deployment receipt ${JSON.stringify(receipt)}`);
+  }
 
   return receipt[0].outMessages?.[0] ?? "";
 }
@@ -43,11 +52,17 @@ async function handleDirectTransaction(
     value: context.directTxValue ?? 82309960n,
     data: hexStringToUint8Array(params[0].data),
   });
-  await waitTillCompleted(
+  if (context.debug) {
+    console.log(`Response tx hash ${hash}`);
+  }
+  const receipt = await waitTillCompleted(
     context.client,
     shardNumber(context.wallet.getAddressHex()),
     hash,
   );
+  if (context.debug) {
+    console.log(`Response tx receipt ${JSON.stringify(receipt)}`);
+  }
 
   return hash;
 }

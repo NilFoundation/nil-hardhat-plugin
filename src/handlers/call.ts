@@ -13,7 +13,18 @@ export async function call(
     return "0x0";
   }
 
-  return await executeOriginalFunction(method, preparedParams, context);
+  if (context.debug) {
+    console.log(`Method ${method} params ${JSON.stringify(preparedParams)}`);
+  }
+  const response = await executeOriginalFunction(
+    method,
+    preparedParams,
+    context,
+  );
+  if (context.debug) {
+    console.log(`Response ${JSON.stringify(response)}`);
+  }
+  return response;
 }
 
 function prepareInput(params: any[]): any[] {

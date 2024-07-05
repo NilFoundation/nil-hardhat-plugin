@@ -12,12 +12,21 @@ export async function getTransactionByHash(
     params,
     context,
   );
+  if (context.debug) {
+    console.log(
+      `Method ${preparedMethod} params ${JSON.stringify(preparedParams)}`,
+    );
+  }
   const result = await executeOriginalFunction(
     preparedMethod,
     preparedParams,
     context,
   );
-  return adaptResult(result);
+  const adaptResponse = adaptResult(result);
+  if (context.debug) {
+    console.log(`Response ${adaptResponse}`);
+  }
+  return adaptResponse;
 }
 
 function prepareInput(
