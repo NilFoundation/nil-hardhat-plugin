@@ -99,5 +99,6 @@ export async function setupWalletAndClient(
     directTxGasLimit: hre.config.directTxGasLimit
       ? BigInt(hre.config.directTxGasLimit)
       : undefined,
+    debug: hre.config.debug ?? false,
   };
 }

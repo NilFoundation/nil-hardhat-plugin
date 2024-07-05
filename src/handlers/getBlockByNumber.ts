@@ -8,12 +8,19 @@ export async function getBlockByNumber(
   context: HandlerContext,
 ) {
   const preparedParams = prepareInput(params, context);
+  if (context.debug) {
+    console.log(`Method ${method} params ${JSON.stringify(preparedParams)}`);
+  }
   const response = await executeOriginalFunction(
     method,
     preparedParams,
     context,
   );
-  return adaptResponse(response);
+  const result = adaptResponse(response);
+  if (context.debug) {
+    console.log(`Response ${JSON.stringify(result)}`);
+  }
+  return result;
 }
 
 function prepareInput(params: any[], context: HandlerContext): any[] {

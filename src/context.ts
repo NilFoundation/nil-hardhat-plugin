@@ -18,4 +18,5 @@ export interface HandlerContext {
   gasLimit: bigint;
   directTxValue?: bigint;
   directTxGasLimit?: bigint;
+  debug: boolean;
 }

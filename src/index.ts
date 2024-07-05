@@ -28,4 +28,5 @@ export interface NilHardhatUserConfig extends HardhatUserConfig {
   shardId?: number;
   directTxGasLimit?: number;
   directTxValue?: number;
+  debug?: boolean;
 }

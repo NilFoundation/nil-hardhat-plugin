@@ -9,6 +9,7 @@ declare module "hardhat/types/config" {
     shardId?: number;
     directTxGasLimit?: number;
     directTxValue?: number;
+    debug?: boolean;
   }
 
   interface HardhatConfig extends NilHardhatUserConfig {} // Augmenting existing type

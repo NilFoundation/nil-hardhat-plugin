@@ -8,8 +8,14 @@ export async function getTransactionCount(
   context: HandlerContext,
 ) {
   const preparedParams = await prepareInput(params, context);
-
-  return await executeOriginalFunction(method, preparedParams, context);
+  if (context.debug) {
+    console.log(`Method ${method} params ${JSON.stringify(preparedParams)}`);
+  }
+  const result = await executeOriginalFunction(method, preparedParams, context);
+  if (context.debug) {
+    console.log(`Response params ${JSON.stringify(result)}`);
+  }
+  return result;
 }
 
 async function prepareInput(
