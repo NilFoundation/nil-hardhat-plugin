@@ -22,7 +22,7 @@ async function prepareDeployment(
       context.hre.config.shardId ?? shardNumber(context.wallet.getAddressHex()),
     bytecode: hexStringToUint8Array(params[0].data),
     args: [bytesToHex(context.wallet.pubkey)],
-    salt: BigInt(Math.floor(Math.random() * 1024)),
+    salt: BigInt(Math.floor(Math.random() * 100000)),
     gas: context.gasLimit,
     value: context.gasLimit * 10n,
   });
