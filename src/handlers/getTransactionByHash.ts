@@ -24,7 +24,7 @@ export async function getTransactionByHash(
   );
   const adaptResponse = adaptResult(result);
   if (context.debug) {
-    console.log(`Response ${adaptResponse}`);
+    console.log(`Response ${JSON.stringify(adaptResponse)}`);
   }
   return adaptResponse;
 }
@@ -74,6 +74,11 @@ function adaptResult(result: any): any {
     if (typeof result.gasPrice !== "string") {
       result.gasPrice = String(result.gasPrice);
     }
+  }
+
+  if (result.signature === "0x") {
+    // Hardhat wants a signature, so we'll give it a fake one.
+    result.signature = `0x${"00".repeat(64)}`;
   }
 
   result.nonce = result.seqno;
