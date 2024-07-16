@@ -1,5 +1,4 @@
 node_modules
-.env
 .idea
 dist/
 .vscode/*
@@ -7,3 +6,9 @@ dist/
 .tsbuildinfo
 *.tar.gz
 *.tgz
+/cache/
+/artifacts/
+/typechain-types/
+/tests/artifacts/
+/tests/cache/
+/tests/typechain-types/

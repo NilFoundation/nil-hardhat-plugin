@@ -6,7 +6,10 @@ export function hexStringToUint8Array(hexString: string): Uint8Array {
   const byteArray = new Uint8Array(numBytes);
 
   for (let i = 0; i < numBytes; i++) {
-    byteArray[i] = Number.parseInt(cleanHexString.substr(i * 2, 2), 16);
+    byteArray[i] = Number.parseInt(
+      cleanHexString.substring(i * 2, i * 2 + 2),
+      16,
+    );
   }
 
   return byteArray;
