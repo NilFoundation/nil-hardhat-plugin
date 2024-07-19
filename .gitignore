@@ -9,6 +9,3 @@ dist/
 /cache/
 /artifacts/
 /typechain-types/
-/tests/artifacts/
-/tests/cache/
-/tests/typechain-types/

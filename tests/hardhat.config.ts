@@ -2,7 +2,7 @@ import "@nomicfoundation/hardhat-ethers";
 import "@nomicfoundation/hardhat-toolbox";
 import * as dotenv from "dotenv";
 import "../.";
-import {NilHardhatUserConfig} from "../src";
+import type { NilHardhatUserConfig } from "../src";
 
 dotenv.config();
 

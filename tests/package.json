@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "npx hardhat test --network nil"
+    "build": "rimraf dist && tsc -p ../tsconfig.json",
+    "test": "npx hardhat test --network nil",
+    "lint": "biome check ignition/modules test",
+    "lint:fix": "biome check --write ignition/modules test"
   },
   "keywords": [],
   "author": "",
