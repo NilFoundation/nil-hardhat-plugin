@@ -12,6 +12,7 @@ import type {
   HttpNetworkConfig,
   NetworkConfig,
 } from "hardhat/types";
+import { bytesToHex } from "viem";
 import type { HandlerContext } from "./context";
 import { shardNumber } from "./utils/conversion";
 import { ensure0xPrefix } from "./utils/hex";
@@ -32,6 +33,8 @@ function isHttpNetworkConfig(
 // Function to setup the wallet and client
 export async function setupWalletAndClient(
   hre: HardhatRuntimeEnvironment,
+  originalRequest: any,
+  originalSend: any,
 ): Promise<HandlerContext> {
   const networkName = "nil";
   const networkConfig = hre.config.networks[networkName];
@@ -54,11 +57,25 @@ export async function setupWalletAndClient(
     throw new Error("No private key configured for the network.");
   }
 
-  const walletAddress = hre.config.walletAddress
+  const signer = new LocalECDSAKeySigner({ privateKey });
+  const pubKey = await signer.getPublicKey();
+
+  const newWalletSalt = new Uint8Array(32);
+  let walletAddress = hre.config.walletAddress
     ? ensure0xPrefix(hre.config.walletAddress)
     : undefined;
   if (!walletAddress) {
-    throw new Error("Wallet address is not configured.");
+    walletAddress = bytesToHex(
+      WalletV1.calculateWalletAddress({
+        pubKey,
+        shardId: 1,
+        salt: newWalletSalt,
+      }),
+    );
+
+    console.log(
+      `Wallet address not found in configuration.\nGenerated wallet address for current private key: ${walletAddress}`,
+    );
   }
 
   // Set up network components
@@ -66,9 +83,8 @@ export async function setupWalletAndClient(
     transport: new HttpTransport({ endpoint: url }),
     shardId: shardNumber(walletAddress),
   });
+  const faucet = new Faucet(client);
 
-  const signer = new LocalECDSAKeySigner({ privateKey });
-  const pubKey = await signer.getPublicKey();
   const config: WalletV1Config = {
     pubkey: pubKey,
     client,
@@ -76,12 +92,18 @@ export async function setupWalletAndClient(
     address: walletAddress,
   };
   const wallet = new WalletV1(config);
-  const faucet = new Faucet(client);
 
-  const originalRequest = hre.network.provider.request.bind(
-    hre.network.provider,
-  );
-  const originalSend = hre.network.provider.send.bind(hre.network.provider);
+  const existingWallet = await client.getCode(walletAddress, "latest");
+  if (existingWallet.length === 0) {
+    console.log("Deploying new wallet...");
+
+    wallet.salt = newWalletSalt;
+
+    await faucet.withdrawToWithRetry(walletAddress, 1_000_000_000n);
+    await wallet.selfDeploy();
+
+    console.log("Deployed new wallet.");
+  }
 
   return {
     hre,
