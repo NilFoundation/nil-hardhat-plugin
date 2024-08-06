@@ -70,16 +70,15 @@ function adaptResult(result: any): any {
     if (typeof result.maxPriorityFeePerGas !== "string") {
       result.maxPriorityFeePerGas = String(result.maxPriorityFeePerGas);
     }
-  } else {
-    if (typeof result.gasPrice !== "string") {
-      result.gasPrice = String(result.gasPrice);
-    }
   }
 
   if (result.signature === "0x") {
     // Hardhat wants a signature, so we'll give it a fake one.
     result.signature = `0x${"00".repeat(64)}`;
   }
+
+  result.gasPrice = "10";
+  result.gas = result.gasUsed;
 
   result.nonce = result.seqno;
   return result;
