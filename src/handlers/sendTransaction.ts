@@ -24,7 +24,7 @@ async function prepareDeployment(
     bytecode: hexStringToUint8Array(params[0].data),
     salt: BigInt(Math.floor(Math.random() * 100000)),
     feeCredit: context.feeCredit,
-    value: params[0].value !== "0x0" ? BigInt(params[0].value) : 0n
+    value: params[0].value !== undefined ? BigInt(params[0].value) : 0n,
   });
   if (context.debug) {
     console.log(`Response deployment ${JSON.stringify(deployed)}`);
