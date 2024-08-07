@@ -114,11 +114,11 @@ export async function setupWalletAndClient(
     originalSend,
     originalRequest,
     isRequest: false,
-    gasLimit: BigInt(hre.config.gasLimit ?? 1_000_000),
+    feeCredit: BigInt(hre.config.feeCredit ?? 1_000_000),
     directTxValue: hre.config.directTxValue
       ? BigInt(hre.config.directTxValue)
       : undefined,
-    directTxGasLimit: hre.config.directTxGasLimit
+    directTxFeeCredit: hre.config.directTxGasLimit
       ? BigInt(hre.config.directTxGasLimit)
       : undefined,
     debug: hre.config.debug ?? false,

@@ -24,13 +24,13 @@ export async function call(
   if (context.debug) {
     console.log(`Response ${JSON.stringify(response)}`);
   }
-  return response;
+  return response.data;
 }
 
 function prepareInput(params: any[]): any[] {
   if (params[0].to !== undefined) {
     if (params[0]) {
-      params[0].gasLimit = "1000000000";
+      params[0].feeCredit = "1000000000";
       params[0].from = params[0].to;
       params[0].value = 0;
     }

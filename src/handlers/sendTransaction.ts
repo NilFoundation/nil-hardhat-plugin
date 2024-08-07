@@ -2,6 +2,7 @@ import { waitTillCompleted } from "@nilfoundation/niljs";
 import { bytesToHex } from "viem";
 import type { HandlerContext } from "../context";
 import { hexStringToUint8Array, shardNumber } from "../utils/conversion";
+import { bigintReplacer } from "../utils/string";
 
 export async function sendTransaction(params: any[], context: HandlerContext) {
   if (context.debug) {
@@ -21,10 +22,9 @@ async function prepareDeployment(
     shardId:
       context.hre.config.shardId ?? shardNumber(context.wallet.getAddressHex()),
     bytecode: hexStringToUint8Array(params[0].data),
-    args: [bytesToHex(context.wallet.pubkey)],
     salt: BigInt(Math.floor(Math.random() * 100000)),
-    gas: context.gasLimit,
-    value: context.gasLimit * 10n,
+    feeCredit: context.feeCredit,
+    value: params[0].value !== undefined ? BigInt(params[0].value) : 0n,
   });
   if (context.debug) {
     console.log(`Response deployment ${JSON.stringify(deployed)}`);
@@ -36,7 +36,9 @@ async function prepareDeployment(
     deployed.hash,
   );
   if (context.debug) {
-    console.log(`Response deployment receipt ${JSON.stringify(receipt)}`);
+    console.log(
+      `Response deployment receipt ${JSON.stringify(receipt, bigintReplacer)}`,
+    );
   }
 
   return receipt[0].outMessages?.[0] ?? "";
@@ -48,8 +50,8 @@ async function handleDirectTransaction(
 ): Promise<any> {
   const hash = await context.wallet.sendMessage({
     to: hexStringToUint8Array(params[0].to),
-    gas: context.directTxGasLimit ?? 100000n,
-    value: context.directTxValue ?? 82309960n,
+    feeCredit: context.directTxFeeCredit ?? 10000000n,
+    value: params[0].value !== undefined ? BigInt(params[0].value) : 0n,
     data: hexStringToUint8Array(params[0].data),
   });
   if (context.debug) {
@@ -61,7 +63,9 @@ async function handleDirectTransaction(
     hash,
   );
   if (context.debug) {
-    console.log(`Response tx receipt ${JSON.stringify(receipt)}`);
+    console.log(
+      `Response tx receipt ${JSON.stringify(receipt, bigintReplacer)}`,
+    );
   }
 
   return hash;
