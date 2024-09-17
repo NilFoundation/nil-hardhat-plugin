@@ -1,6 +1,6 @@
 {
   "name": "@nilfoundation/hardhat-plugin",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Custom Hardhat plugin to enable seamless deployment and interaction with applications within =nil;",
   "repository": {
     "type": "git",
@@ -14,42 +14,36 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.json",
+    "lint": "biome check src test",
+    "lint:fix": "biome check --write src",
+    "test": "npx hardhat test --network nil",
     "format": "biome format ./src",
-    "lint": "biome check ./src",
-    "fix:format": "biome format --write ./src",
-    "fix:lint": "biome check --apply ./src"
+    "fix:format": "biome format --write ./src"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@nilfoundation/niljs": "^0.13.0",
+    "@nilfoundation/niljs": "^0.14.0",
     "ethers": "^6.12.1",
     "hardhat": "^2.22.4",
     "viem": "^2.16.3"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.2",
-    "@lavamoat/allow-scripts": "^3.0.4",
-    "@lavamoat/preinstall-always-fail": "^2.0.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.6",
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "dotenv": "^16.4.5",
     "rimraf": "^5.0.7",
+    "ts-node": "^10.9.2",
     "typescript": "^5.5.2"
   },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "simple-git-hooks": {
     "pre-commit": "npm run lint"
-  },
-  "lavamoat": {
-    "allowScripts": {
-      "@lavamoat/preinstall-always-fail": false,
-      "@biomejs/biome": true,
-      "simple-git-hooks": true
-    }
   }
 }
